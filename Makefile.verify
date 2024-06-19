@@ -1,0 +1,30 @@
+OBJS = porter2_stemmer.o
+CC = clang++ -std=c++11 -Wall -pedantic -I.
+CCOPTS = -O3 -DBENCHMARK -DCHECK
+
+all: ads_p1_art ads_p1_hash ads_p1_rbt
+
+run: all
+	if [ ! -d result ]; then mkdir result; fi
+	echo verify
+	./ads_p1_art verify < in.verify 2>&1 > result/art_verify.out
+	./ads_p1_rbt verify < in.verify 2>&1 > result/rbt_verify.out
+	./ads_p1_hash verify < in.verify 2>&1 > result/hash_verify.out
+	diff result/art_verify.out result/rbt_verify.out
+
+ads_p1_art: $(OBJS) main.cpp 
+	$(CC) $(CCOPTS) -o ads_p1_art main.cpp $(OBJS) -DART
+
+ads_p1_hash: $(OBJS) main.cpp
+	$(CC) $(CCOPTS) -o ads_p1_hash main.cpp $(OBJS) -DHASH
+
+ads_p1_rbt: $(OBJS) main.cpp
+	$(CC) $(CCOPTS) -o ads_p1_rbt main.cpp $(OBJS) -DRBT
+
+porter2_stemmer.o: porter2_stemmer/porter2_stemmer.cpp porter2_stemmer/porter2_stemmer.h porter2_stemmer/hash.h porter2_stemmer/string_view.h
+	make -C porter2_stemmer
+	cp porter2_stemmer/porter2_stemmer.o .
+
+clean:
+	rm -rf *.o *.dSYM result/* mprofile_* wc ads_p1_* 
+	make -C porter2_stemmer clean

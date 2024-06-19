@@ -1,0 +1,8 @@
+Read StopWord resources/stopword/innodb
+Read DocList resources/docList/shakespeare
+Show Term
+Show Info
+Sort
+Query List resources/query/1000
+Query List resources/query/letter7common
+END
